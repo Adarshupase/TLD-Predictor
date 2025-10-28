@@ -44,12 +44,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center text-white p-6">
-      <h1 className="text-4xl font-bold text-blue-400 mb-4">Predict the TLD</h1>
+      <h1 className="text-4xl font-bold text-blue-400 mb-4">Website Domain Predictor</h1>
 
       <div className="bg-gray-800 p-6 rounded-xl shadow-lg w-full max-w-lg">
         <input
           type="text"
-          placeholder="Enter base name (e.g. github)"
+          placeholder="Enter base name (e.g. learncpp)"
           value={baseName}
           onChange={(e) => setBaseName(e.target.value)}
           className="w-full p-3 mb-4 bg-gray-700 rounded-lg text-white"

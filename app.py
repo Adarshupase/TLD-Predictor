@@ -55,8 +55,8 @@ def predict_tld():
     # Choose which model/vectorizer to use
     use_base_only = not category
     if use_base_only:
-        model_file = "tld_base_predictor.pkl"
-        vec_file = "tld_base_vectorizer.pkl"
+        model_file = "tld_base_predictor_v2.pkl"
+        vec_file = "tld_base_vectorizer_v2.pkl"
     else:
         model_file = "tld_predictor.pkl"
         vec_file = "tld_vectorizer.pkl"
