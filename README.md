@@ -25,7 +25,7 @@ The goal of this project is to explore lexical and categorical patterns in domai
 Given a website name and optionally its category, the model predicts the most likely TLD.
 
 Examples:
-- Input: `github` + `computers` → `.com`
+- Input: `linux` + `computers` → `.org`
 - Input: `mit` + `education` → `.edu`
 - Input: `bbc` + `news` → `.co.uk`
 
@@ -41,8 +41,8 @@ After processing, the dataset included approximately **1.48 million rows** with 
 |---------|--------------|
 | id | Row identifier |
 | url | Full URL |
-| base_name | Extracted base domain (e.g., "github") |
-| tld | True top-level domain (e.g., "com") |
+| base_name | Extracted base domain (e.g., "linux") |
+| tld | True top-level domain (e.g., "org") |
 | category | Website category (e.g., "computers") |
 
 Data cleaning steps included:
@@ -93,9 +93,9 @@ Returns a random domain and category with model predictions (used for gameplay).
 Example response:
 ```json
 {
-  "domain": "github",
+  "domain": "linux",
   "category": "computers",
-  "options": ["com", "org", "io", "net"],
+  "options": ["org", "com", "io", "net"],
   "answer": "com",
   "options_with_scores": [
     {"tld": "com", "score": 0.82},
