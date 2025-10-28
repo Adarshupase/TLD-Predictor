@@ -32,6 +32,14 @@ df = pd.read_csv("fair_game_play.csv", dtype=str, low_memory=False)
 df = df.dropna(subset=["base_name", "category", "tld"]).reset_index(drop=True)
 logging.info("Gameplay dataset loaded (%d rows).", len(df))
 
+@app.route("/api/categories")
+def get_categories():
+    try:
+        # Use your gameplay or training dataframe
+        categories = sorted(df["category"].dropna().unique().tolist())
+        return jsonify(categories)
+    except Exception as e:
+        return jsonify({"error": "Could not load categories"}), 500
 
 @app.route("/api/predict", methods=["POST"])
 def predict_tld():
