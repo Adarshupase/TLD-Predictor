@@ -5,12 +5,11 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, accuracy_score
 import joblib
 from tqdm import tqdm
-
 # --- CONFIG ---
 DATA_PATH = "/content/drive/MyDrive/TLD_GUESSER/domain_to_tld_trainable.csv"
 GAME_PATH = "/content/drive/MyDrive/TLD_GUESSER/fair_game_play.csv"
 MAX_PER_TLD = 10000        # cap per TLD to reduce .com bias
-MAX_FEATURES = 400_000     # fits safely in 12GB RAM
+MAX_FEATURES = 400_000     
 RANDOM_STATE = 42
 
 # --- LOAD DATA ---
