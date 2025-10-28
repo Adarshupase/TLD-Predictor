@@ -4,7 +4,6 @@
 Check this out (Click on the image it's a video)
 [![Watch the video](https://img.youtube.com/vi/XIQxmLpuFYw/maxresdefault.jpg)](https://www.youtube.com/watch?v=XIQxmLpuFYw)
 
-<br/>
 ![TLD Guesser UI](demo.png)
 
 
