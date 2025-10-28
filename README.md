@@ -2,7 +2,7 @@
 
 
 Check this out 
-[![Watch the video](https://www.youtube.com/watch?v=XIQxmLpuFYw)
+(https://www.youtube.com/watch?v=XIQxmLpuFYw)
 
 ![TLD Guesser UI](demo.png)
 
