@@ -28,10 +28,9 @@ train_df = train_df[~train_df.index.isin(balanced_game_df.index)]
 train_df.to_csv("tld_train.csv", index=False)
 balanced_game_df.to_csv("tld_game_balanced.csv", index=False)
 
-print(f"🎓 Training set: {len(train_df):,}")
-print(f"🎮 Balanced gameplay set: {len(balanced_game_df):,}")
-print(f"🎯 TLDs in gameplay: {balanced_game_df['tld'].nunique()} unique TLDs")
+print(f" Training set: {len(train_df):,}")
+print(f" Balanced gameplay set: {len(balanced_game_df):,}")
+print(f" TLDs in gameplay: {balanced_game_df['tld'].nunique()} unique TLDs")
 
-# Verify balance
 print("\nTop 15 TLDs in gameplay data:")
 print(balanced_game_df['tld'].value_counts().head(15))

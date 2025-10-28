@@ -27,7 +27,7 @@ logging.info("Model and vectorizer loaded.")
 app = Flask(__name__)
 CORS(app)
 
-# load gameplay dataset (balanced)
+# load gameplay dataset (fair_game_play) consist of 20 % of the original used for testing
 df = pd.read_csv("fair_game_play.csv", dtype=str, low_memory=False)
 df = df.dropna(subset=["base_name", "category", "tld"]).reset_index(drop=True)
 logging.info("Gameplay dataset loaded (%d rows).", len(df))
@@ -35,7 +35,6 @@ logging.info("Gameplay dataset loaded (%d rows).", len(df))
 @app.route("/api/categories")
 def get_categories():
     try:
-        # Use your gameplay or training dataframe
         categories = sorted(df["category"].dropna().unique().tolist())
         return jsonify(categories)
     except Exception as e:
@@ -102,20 +101,16 @@ def get_question():
     top4 = scored[:4]
     options = [t for t, _ in top4]
 
-    # ensure true answer present (deterministic choice if reproducible required)
     if true_tld not in options:
         idx = random.Random(domain + category).randint(0, 3)  # deterministic per domain+category
         options[idx] = true_tld
 
     random.shuffle(options)  # shuffle for UI
 
-    # log predictions and actual
     logging.info("NEW QUESTION: domain=%s category=%s", domain, category)
     logging.info("Top predictions (class -> score): %s", ", ".join([f"{t}:{s:.4f}" for t, s in top4]))
     logging.info("Returned options: %s | true: %s", options, true_tld)
 
-    # return options and optionally the scores for each option
-    # build a dict mapping option -> score (score 0 if not in predicted classes)
     score_map = {t: float(s) for t, s in scored}
     options_with_scores = [{"tld": opt, "score": score_map.get(opt, 0.0)} for opt in options]
 
@@ -129,4 +124,4 @@ def get_question():
 
 if __name__ == "__main__":
     logging.info("Starting Flask server on http://0.0.0.0:5000")
-    app.run(host="0.0.0.0", port=5000, debug=True)  # set debug=False for production
+    app.run(host="0.0.0.0", port=5000, debug=True)  
