@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pkl
+.env
+venv/
+.env/
+
+# Node.js
+node_modules/
+dist/
+.env.local
+
+# OS files
+.DS_Store
+
+# Vite build
+frontend/dist/
+
+# Model files
+*.pkl
+*.joblib
+*.csv
