@@ -1,7 +1,7 @@
 # TLD Guesser
 
 
-Check this out 
+Check this out (Click on the image it's a video)
 [![Watch the video](https://img.youtube.com/vi/XIQxmLpuFYw/maxresdefault.jpg)](https://www.youtube.com/watch?v=XIQxmLpuFYw)
 
 TLD Guesser is a machine learning project that predicts the top-level domain (TLD) of a website (such as `.com`, `.org`, `.edu`, `.co.uk`, etc.) based on its base name and optionally its category.  
