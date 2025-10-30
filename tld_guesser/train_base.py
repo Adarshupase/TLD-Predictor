@@ -5,8 +5,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, accuracy_score
 import joblib
 from tqdm import tqdm
-DATA_PATH = "/content/drive/MyDrive/TLD_GUESSER/domain_to_tld_trainable.csv"
-GAME_PATH = "/content/drive/MyDrive/TLD_GUESSER/fair_game_play.csv"
+DATA_PATH = "/domain_to_tld_trainable.csv"
+GAME_PATH = "fair_game_play.csv"
 MAX_PER_TLD = 10000        # cap per TLD to reduce .com bias
 MAX_FEATURES = 400_000     
 RANDOM_STATE = 42
@@ -68,8 +68,8 @@ val_acc = accuracy_score(y_val, y_pred)
 print(f"Validation Accuracy: {val_acc * 100:.2f}%\n")
 print(classification_report(y_val, y_pred, zero_division=0))
 
-joblib.dump(model, "/content/drive/MyDrive/TLD_GUESSER/tld_base_predictor_v2.pkl")
-joblib.dump(vectorizer, "/content/drive/MyDrive/TLD_GUESSER/tld_base_vectorizer_v2.pkl")
+joblib.dump(model, "tld_base_predictor_v2.pkl")
+joblib.dump(vectorizer, "tld_base_vectorizer_v2.pkl")
 print("\nSaved model → tld_base_predictor_v2.pkl")
 print("Saved vectorizer → tld_base_vectorizer_v2.pkl\n")
 
