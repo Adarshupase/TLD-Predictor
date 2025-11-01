@@ -34,6 +34,13 @@ CORS(app,
          "methods": ["GET", "POST", "OPTIONS"],
          "allow_headers": ["Content-Type", "Authorization"]
      }})
+@app.after_request
+def apply_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "https://tld-predictor-1.onrender.com"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+    response.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
+    return response
+
 
 
 # load gameplay dataset (fair_game_play) consist of 20 % of the original used for testing
@@ -51,44 +58,15 @@ def get_categories():
 
 @app.route("/api/predict", methods=["POST"])
 def predict_tld():
-    from flask import request
-
-    data = request.get_json()
-    base_name = data.get("base_name", "").strip().lower()
-    category = data.get("category", "").strip().lower()
-
-    if not base_name:
-        return jsonify({"error": "Missing base_name"}), 400
-
-    # Choose which model/vectorizer to use
-    use_base_only = not category
-    if use_base_only:
-        model_file = "tld_base_predictor_v2.pkl"
-        vec_file = "tld_base_vectorizer_v2.pkl"
-    else:
-        model_file = "tld_predictor.pkl"
-        vec_file = "tld_vectorizer.pkl"
-
     try:
-        model = joblib.load(model_file)
-        vectorizer = joblib.load(vec_file)
-    except Exception as e:
-        return jsonify({"error": "Model not found"}), 500
-
     text = [f"{base_name} {category}" if category else base_name]
     X = vectorizer.transform(text)
     probs = model.predict_proba(X)[0]
     classes = model.classes_
+except Exception as e:
+    logging.exception("Prediction failed:")
+    return jsonify({"error": str(e)}), 500
 
-    top = sorted(zip(classes, probs), key=lambda x: x[1], reverse=True)[:5]
-
-    return jsonify({
-        "base_name": base_name,
-        "category": category or None,
-        "predictions": [
-            {"tld": t, "score": round(float(s), 4)} for t, s in top
-        ]
-    })
 
 @app.route("/api/question")
 def get_question():
