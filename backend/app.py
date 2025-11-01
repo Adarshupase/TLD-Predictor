@@ -42,15 +42,9 @@ def apply_cors_headers(response):
     return response
 
 
-try:
-    model_full = joblib.load("tld_predictor.pkl")
-    vectorizer_full = joblib.load("tld_vectorizer.pkl")
-    model_base = joblib.load("tld_base_predictor_v2.pkl")
-    vectorizer_base = joblib.load("tld_base_vectorizer_v2.pkl")
-    logging.info("All models loaded successfully.")
-except Exception as e:
-    logging.exception("Model loading failed:")
-    raise e
+model = joblib.load("tld_predictor.pkl")
+vectorizer = joblib.load("tld_vectorizer.pkl")
+logging.info("Model and vectorizer loaded successfully.")
 
 # load gameplay dataset (fair_game_play) consist of 20 % of the original used for testing
 df = pd.read_csv("fair_game_play.csv", dtype=str, low_memory=False)
@@ -75,16 +69,13 @@ def predict_tld():
     if not base_name:
         return jsonify({"error": "Missing base_name"}), 400
 
-    # Choose which preloaded model/vectorizer to use
-    use_base_only = not category
-    model_active = model_base if use_base_only else model_full
-    vectorizer_active = vectorizer_base if use_base_only else vectorizer_full
 
     try:
+        # Combine both inputs (category may be empty)
         text = [f"{base_name} {category}" if category else base_name]
-        X = vectorizer_active.transform(text)
-        probs = model_active.predict_proba(X)[0]
-        classes = model_active.classes_
+        X = vectorizer.transform(text)
+        probs = model.predict_proba(X)[0]
+        classes = model.classes_
 
         top = sorted(zip(classes, probs), key=lambda x: x[1], reverse=True)[:5]
 
@@ -100,21 +91,19 @@ def predict_tld():
         return jsonify({"error": str(e)}), 500
 
 
-
 @app.route("/api/question")
 def get_question():
-    # choose a random row
     row = df.sample(1).iloc[0]
     domain, category, true_tld = row["base_name"], row["category"], row["tld"]
 
     text = [f"{domain} {category}"]
     try:
-        X = vectorizer_full.transform(text)
-        probs = model_full.predict_proba(X)[0]
-        classes = model_full.classes_
+        X = vectorizer.transform(text)
+        probs = model.predict_proba(X)[0]
+        classes = model.classes_
     except Exception as e:
-        logging.exception("Prediction failed")
-        return jsonify({"error": "prediction failed"}), 500
+        logging.exception("Prediction failed in /api/question")
+        return jsonify({"error": "Prediction failed"}), 500
 
     scored = sorted(zip(classes, probs), key=lambda x: x[1], reverse=True)
     top4 = scored[:4]
@@ -125,11 +114,9 @@ def get_question():
         options[idx] = true_tld
 
     random.shuffle(options)
-
     score_map = {t: float(s) for t, s in scored}
     options_with_scores = [{"tld": opt, "score": score_map.get(opt, 0.0)} for opt in options]
 
-    logging.info(f"NEW QUESTION: domain={domain}, category={category}, true={true_tld}")
     return jsonify({
         "domain": domain,
         "category": category,
@@ -137,6 +124,8 @@ def get_question():
         "options_with_scores": options_with_scores,
         "answer": true_tld
     })
+
+
 if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT",5000))
