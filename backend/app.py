@@ -25,7 +25,8 @@ vectorizer = joblib.load("tld_vectorizer.pkl")
 logging.info("Model and vectorizer loaded.")
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "https://tld-predictor-1.onrender.com"}})
+
 
 # load gameplay dataset (fair_game_play) consist of 20 % of the original used for testing
 df = pd.read_csv("fair_game_play.csv", dtype=str, low_memory=False)
