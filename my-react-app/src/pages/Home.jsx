@@ -16,7 +16,7 @@ export default function Home() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/categories");
+        const res = await axios.get("https://tld-predictor.onrender.com/api/categories");
         setCategories(res.data);
       } catch (err) {
         console.error("Error fetching categories", err);
@@ -30,7 +30,7 @@ export default function Home() {
     if (!baseName) return;
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/predict", {
+      const res = await axios.post("https://tld-predictor.onrender.com/api/predict", {
         base_name: baseName,
         category: hasCategory ? category : "",
       });

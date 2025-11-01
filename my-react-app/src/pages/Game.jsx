@@ -15,7 +15,7 @@ export default function Game() {
   const fetchQuestion = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:5000/api/question");
+      const res = await axios.get("https://tld-predictor.onrender.com/api/question");
       setQuestion(res.data);
       setSelected(null);
       setFeedback("");
