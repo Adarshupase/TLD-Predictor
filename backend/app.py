@@ -123,5 +123,7 @@ def get_question():
     })
 
 if __name__ == "__main__":
-    logging.info("Starting Flask server on http://0.0.0.0:5000")
-    app.run(host="0.0.0.0", port=5000, debug=True)  
+    import os
+    port = int(os.environ.get("PORT",5000))
+    logging.info(f"starting flask server on htpps://0.0.0.0:{port}")
+    app.run(host="0.0.0.0",port = port)
