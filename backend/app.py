@@ -42,6 +42,15 @@ def apply_cors_headers(response):
     return response
 
 
+try:
+    model_full = joblib.load("tld_predictor.pkl")
+    vectorizer_full = joblib.load("tld_vectorizer.pkl")
+    model_base = joblib.load("tld_base_predictor_v2.pkl")
+    vectorizer_base = joblib.load("tld_base_vectorizer_v2.pkl")
+    logging.info("All models loaded successfully.")
+except Exception as e:
+    logging.exception("Model loading failed:")
+    raise e
 
 # load gameplay dataset (fair_game_play) consist of 20 % of the original used for testing
 df = pd.read_csv("fair_game_play.csv", dtype=str, low_memory=False)
@@ -55,17 +64,41 @@ def get_categories():
         return jsonify(categories)
     except Exception as e:
         return jsonify({"error": "Could not load categories"}), 500
-
 @app.route("/api/predict", methods=["POST"])
 def predict_tld():
+    from flask import request
+
+    data = request.get_json()
+    base_name = data.get("base_name", "").strip().lower()
+    category = data.get("category", "").strip().lower()
+
+    if not base_name:
+        return jsonify({"error": "Missing base_name"}), 400
+
+    # Choose which preloaded model/vectorizer to use
+    use_base_only = not category
+    model_active = model_base if use_base_only else model_full
+    vectorizer_active = vectorizer_base if use_base_only else vectorizer_full
+
     try:
-    text = [f"{base_name} {category}" if category else base_name]
-    X = vectorizer.transform(text)
-    probs = model.predict_proba(X)[0]
-    classes = model.classes_
-except Exception as e:
-    logging.exception("Prediction failed:")
-    return jsonify({"error": str(e)}), 500
+        text = [f"{base_name} {category}" if category else base_name]
+        X = vectorizer_active.transform(text)
+        probs = model_active.predict_proba(X)[0]
+        classes = model_active.classes_
+
+        top = sorted(zip(classes, probs), key=lambda x: x[1], reverse=True)[:5]
+
+        return jsonify({
+            "base_name": base_name,
+            "category": category or None,
+            "predictions": [
+                {"tld": t, "score": round(float(s), 4)} for t, s in top
+            ]
+        })
+    except Exception as e:
+        logging.exception("Prediction failed:")
+        return jsonify({"error": str(e)}), 500
+
 
 
 @app.route("/api/question")
@@ -76,39 +109,34 @@ def get_question():
 
     text = [f"{domain} {category}"]
     try:
-        X = vectorizer.transform(text)
-        probs = model.predict_proba(X)[0]
-        classes = model.classes_
+        X = vectorizer_full.transform(text)
+        probs = model_full.predict_proba(X)[0]
+        classes = model_full.classes_
     except Exception as e:
         logging.exception("Prediction failed")
         return jsonify({"error": "prediction failed"}), 500
 
-    # top-4 predicted classes with scores
     scored = sorted(zip(classes, probs), key=lambda x: x[1], reverse=True)
     top4 = scored[:4]
     options = [t for t, _ in top4]
 
     if true_tld not in options:
-        idx = random.Random(domain + category).randint(0, 3)  # deterministic per domain+category
+        idx = random.Random(domain + category).randint(0, 3)
         options[idx] = true_tld
 
-    random.shuffle(options)  # shuffle for UI
-
-    logging.info("NEW QUESTION: domain=%s category=%s", domain, category)
-    logging.info("Top predictions (class -> score): %s", ", ".join([f"{t}:{s:.4f}" for t, s in top4]))
-    logging.info("Returned options: %s | true: %s", options, true_tld)
+    random.shuffle(options)
 
     score_map = {t: float(s) for t, s in scored}
     options_with_scores = [{"tld": opt, "score": score_map.get(opt, 0.0)} for opt in options]
 
+    logging.info(f"NEW QUESTION: domain={domain}, category={category}, true={true_tld}")
     return jsonify({
         "domain": domain,
         "category": category,
-        "options": options,                    # list of tld strings (shuffled)
-        "options_with_scores": options_with_scores,  # optional detailed
+        "options": options,
+        "options_with_scores": options_with_scores,
         "answer": true_tld
     })
-
 if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT",5000))
