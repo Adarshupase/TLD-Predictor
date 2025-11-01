@@ -18,6 +18,3 @@ dist/
 frontend/dist/
 
 # Model files
-*.pkl
-*.joblib
-*.csv
