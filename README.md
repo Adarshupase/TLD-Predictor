@@ -8,7 +8,7 @@ Check this out
 
 
 TLD Guesser is a machine learning project that predicts the top-level domain (TLD) of a website (such as `.com`, `.org`, `.edu`, `.co.uk`, etc.) based on its base name and optionally its category.  
-It also includes an interactive web-based game where users can guess the TLD of randomly selected domains.
+It also includes an interactive web-based game where users can guess the TLD of randomly selected domains
 
 The project consists of:
 - A **Flask backend** for model inference and API endpoints
