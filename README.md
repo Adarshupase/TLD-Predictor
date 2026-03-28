@@ -1,8 +1,7 @@
 # TLD Guesser
 
 
-Check this out 
-(https://www.youtube.com/watch?v=XIQxmLpuFYw)
+
 
 ![TLD Guesser UI](demo.png)
 
